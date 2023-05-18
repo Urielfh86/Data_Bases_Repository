@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="C:/Users/uri33/Desktop/Asignaturas_VIU/03_Bases_de_datos/Actividades/Act_2_evaluable/act_2_proyectos_y_cientificos.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="125"/><column_width id="3" width="2841"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,13:mainLOG_PROYECTOS"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="ASIGNACIONES" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="2" value="119"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="CIENTIFICOS" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="189"/><column index="2" value="119"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="LOG_PROYECTOS" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="52"/><column index="2" value="289"/><column index="3" value="393"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="PROYECTOS" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="70"/><column index="2" value="267"/><column index="3" value="60"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="sentencia_1">SELECT CIENTIFICOS.DNI, CIENTIFICOS.Nombre, PROYECTOS.Codigo, PROYECTOS.Nombre 
+FROM CIENTIFICOS
+INNER JOIN ASIGNACIONES ON CIENTIFICOS.DNI = ASIGNACIONES.DNICientifico
+INNER JOIN PROYECTOS ON ASIGNACIONES.CodProyecto = PROYECTOS.Codigo
+</sql><sql name="sentencia_2">SELECT CIENTIFICOS.DNI, CIENTIFICOS.Nombre, COUNT(ASIGNACIONES.CodProyecto) AS NumeroDeProyectos
+FROM CIENTIFICOS
+LEFT OUTER JOIN ASIGNACIONES ON CIENTIFICOS.DNI = ASIGNACIONES.DNICientifico
+GROUP BY CIENTIFICOS.DNI</sql><sql name="sentencia_3">SELECT PROYECTOS.Codigo, PROYECTOS.Nombre, COUNT(ASIGNACIONES.DNICientifico) AS NumCientificosAsignados
+FROM PROYECTOS
+LEFT OUTER JOIN ASIGNACIONES ON PROYECTOS.Codigo = ASIGNACIONES.CodProyecto
+GROUP BY PROYECTOS.Codigo, PROYECTOS.Nombre</sql><sql name="sentencia_4">SELECT CIENTIFICOS.DNI, CIENTIFICOS.Nombre, SUM(PROYECTOS.Horas) AS HorasDeDedicacion
+FROM CIENTIFICOS 
+INNER JOIN ASIGNACIONES ON CIENTIFICOS.DNI = ASIGNACIONES.DNICientifico
+INNER JOIN PROYECTOS ON ASIGNACIONES.CodProyecto = PROYECTOS.Codigo
+GROUP BY CIENTIFICOS.DNI, CIENTIFICOS.Nombre;
+</sql><sql name="sentencia_5">SELECT CIENTIFICOS.DNI, CIENTIFICOS.Nombre
+FROM CIENTIFICOS
+INNER JOIN ASIGNACIONES ON CIENTIFICOS.DNI = ASIGNACIONES.DNICientifico
+INNER JOIN PROYECTOS ON ASIGNACIONES.CodProyecto = PROYECTOS.Codigo
+GROUP BY CIENTIFICOS.DNI, CIENTIFICOS.Nombre
+HAVING COUNT(DISTINCT ASIGNACIONES.CodProyecto) &gt; 1 AND AVG(PROYECTOS.Horas) &gt; 80
+</sql><sql name="sentencia_optativa_1_create_table_log">CREATE TABLE LOG_PROYECTOS (
+    id INTEGER PRIMARY KEY,
+    FechaHora TEXT,
+    Descripcion TEXT
+);</sql><sql name="sentencia_optativa_1_insert">CREATE TRIGGER tr_proyectos_insert AFTER INSERT ON PROYECTOS
+BEGIN
+    INSERT INTO LOG_PROYECTOS (FechaHora, Descripcion)
+    VALUES (DATETIME('now'), 'Nuevo proyecto insertado: ' || new.Nombre);
+END;</sql><sql name="sentencia_optativa_1_delete">CREATE TRIGGER tr_proyectos_delete AFTER DELETE ON PROYECTOS
+BEGIN
+    INSERT INTO LOG_PROYECTOS (FechaHora, Descripcion)
+    VALUES (DATETIME('now'), 'Proyecto eliminado con código: ' || old.Codigo);
+END;
+</sql><sql name="prueba_sentencia_opt_1">DELETE FROM PROYECTOS WHERE Codigo = 6;
+INSERT INTO PROYECTOS (Codigo, Nombre, Horas) VALUES (6, 'Proyecto U', 52);
+
+
+</sql><sql name="sentencia_optativa_2">CREATE VIEW cientificos_proyectos_horas AS
+SELECT CIENTIFICOS.DNI, CIENTIFICOS.Nombre, PROYECTOS.Codigo, PROYECTOS.Nombre, PROYECTOS.Horas
+FROM CIENTIFICOS 
+INNER JOIN ASIGNACIONES ON CIENTIFICOS.DNI = ASIGNACIONES.DNICientifico
+INNER JOIN PROYECTOS ON ASIGNACIONES.CodProyecto = PROYECTOS.Codigo
+WHERE PROYECTOS.Horas &gt; 100
+</sql><sql name="prueba_sentencia_opt_2">SELECT * FROM cientificos_proyectos_horas
+</sql><current_tab id="5"/></tab_sql></sqlb_project>
